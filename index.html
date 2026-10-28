@@ -787,8 +787,14 @@
     <h2 class="section-title reveal">Let's get you seen.</h2>
     <p class="reveal" style="color:var(--muted);font-size:14px;line-height:1.7;">Tell us about your business and what you want from your marketing. We'll get back to you within 24 hours.</p>
 
-    <!-- Replace YOUR_FORM_ID with your Formspree form ID (formspree.io) so messages reach your inbox -->
-    <form class="contact-form reveal" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <!-- Enquiries are delivered by FormSubmit (formsubmit.co) to the address in the action URL. No account needed:
+         the first enquiry triggers a one-time "Activate form" email to that address — click it and the form is live. -->
+    <form class="contact-form reveal" id="contact-form" action="https://formsubmit.co/ajax/olivier.b-w@outlook.com" method="POST">
+      <input type="hidden" name="_subject" value="New ORB Media enquiry">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <!-- Spam trap: hidden from people, bots fill it and get dropped -->
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="name">Name</label>
@@ -885,7 +891,8 @@
         body: new FormData(form),
         headers: { 'Accept': 'application/json' }
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || String(data.success) === 'false') throw new Error(data.message);
       form.reset();
       btn.textContent = "Sent — we'll be in touch within 24 hours";
       status.textContent = '';
